@@ -1,0 +1,40 @@
+name: Android Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+    paths:
+      - '**.gradle'
+      - '**.properties'
+      - '**.java'
+      - '**.xml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+
+      - name: Grant execute permission to gradlew
+        run: chmod +x ./gradlew
+
+      - name: Build Android App
+        run: ./gradlew assemble
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: app-release
+          path: app/build/outputs/apk/release/
