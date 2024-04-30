@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - 'release/*'  # 如果使用了 release 分支进行发布，也可以监听该分支的推送事件
   pull_request:
     branches:
       - main
@@ -28,7 +29,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '20'
+          node-version: '16'
 
       - name: Set up JDK
         uses: actions/setup-java@v2
@@ -47,3 +48,27 @@ jobs:
         with:
           name: app-release
           path: app/build/outputs/apk/release/
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}  # 使用当前的 tag 名称作为发布版本的 tag 名称
+          release_name: ${{ github.ref }}  # 使用当前的 tag 名称作为发布版本的名称
+          body: |
+            Description of the release
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: app/build/outputs/apk/release/  # 指定要上传的文件路径
+          asset_name: app-release.apk  # 指定发布的文件名
+          asset_content_type: application/vnd.android.package-archive  # 指定文件类型
