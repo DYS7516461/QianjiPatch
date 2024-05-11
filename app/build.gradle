@@ -11,8 +11,8 @@ android {
         applicationId "net.ankio.qianji"
         minSdk 28
         targetSdk 34
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.0.0-beta2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -35,6 +35,7 @@ android {
     }
     buildFeatures {
         buildConfig true
+        viewBinding true
     }
 }
 
@@ -54,6 +55,6 @@ dependencies {
     implementation libs.sdk
     implementation libs.common
     compileOnly libs.xposed
-
+    implementation libs.toaster
 
 }
